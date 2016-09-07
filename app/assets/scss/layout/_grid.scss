@@ -1,0 +1,47 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  background: url(../img/bg_pattern.png) repeat;
+  background-color: #313131;
+  color: $white;
+  margin-bottom: 60px;
+}
+
+a {
+  color: $mainColorOrange;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+  color: $mainColorOrange;
+  background: $white;
+}
+
+.logo_svg{
+  width:37%;
+}
+
+header {
+  padding-top:105px;
+  display: block;
+}
+
+.instructions {
+  padding-top: 45px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+}
+
+.container .text-primary {
+  margin: 20px 0;
+  color: $white;
+}

@@ -1,0 +1,25 @@
+@font-face {
+	font-family: 'TypoGraphica';
+	src: url('../fonts/typographica/TypoGraphica.eot');
+	src: url('../fonts/typographica/TypoGraphica.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/typographica/TypoGraphica.woff') format('woff'),
+		url('../fonts/Ttypographica/ypoGraphica.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+$mainFontFamily: "TypoGraphica", helvetica, sans-serif;
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $mainFontFamily;
+  letter-spacing: 3px;
+}
+
+.big_number{
+  font: 60px $mainFontFamily;
+  float: left;
+  padding-right: 15px;
+  display: block;
+  margin-top: -12px;
+  color: $mainColorOrange;
+}
