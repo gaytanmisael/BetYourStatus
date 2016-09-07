@@ -1,14 +1,21 @@
+// Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDmXnP8cy63BNqCprLALVQD3WHoDO-Pnjs",
+    authDomain: "betyourstatus.firebaseapp.com",
+    databaseURL: "https://betyourstatus.firebaseio.com",
+    storageBucket: "",
+  };
+  firebase.initializeApp(config);
+
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('myApp', [
+angular.module('BetYourStatus', [
   'ngRoute',
-  'myApp.view1',
-  'myApp.view2',
-  'myApp.version'
+  'BetYourStatus.home'
 ]).
 config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
   $locationProvider.hashPrefix('!');
 
-  $routeProvider.otherwise({redirectTo: '/view1'});
+  $routeProvider.otherwise({redirectTo: '/'});
 }]);
