@@ -10,48 +10,92 @@ angular.module('BetYourStatus.home', ['ngRoute','firebase'])
 }])
 
 .controller('HomeCtrl', [function() {
-  function checkLoginState(event) {
-  if (event.authResponse) {
-    // User is signed-in Facebook.
-    var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
-      unsubscribe();
-      // Check if we are already signed-in Firebase with the correct user.
-      if (!isUserEqual(event.authResponse, firebaseUser)) {
-        // Build Firebase credential with the Facebook auth token.
-        var credential = firebase.auth.FacebookAuthProvider.credential(
-            event.authResponse.accessToken);
-        // Sign in with the credential from the Facebook user.
-        firebase.auth().signInWithCredential(credential).catch(function(error) {
-          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          // The email of the user's account used.
-          var email = error.email;
-          // The firebase.auth.AuthCredential type that was used.
-          var credential = error.credential;
-          // ...
+  function toggleSignIn() {
+        if (!firebase.auth().currentUser) {
+          // [START createprovider]
+          var provider = new firebase.auth.FacebookAuthProvider();
+          // [END createprovider]
+          // [START addscopes]
+          provider.addScope('user_birthday');
+          // [END addscopes]
+          // [START signin]
+          firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+            // [START_EXCLUDE]
+            document.getElementById('quickstart-oauthtoken').textContent = token;
+            // [END_EXCLUDE]
+          }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // [START_EXCLUDE]
+            if (errorCode === 'auth/account-exists-with-different-credential') {
+              alert('You have already signed up with a different auth provider for that email.');
+              // If you are using multiple auth providers on your app you should handle linking
+              // the user's accounts here.
+            } else {
+              console.error(error);
+            }
+            // [END_EXCLUDE]
+          });
+          // [END signin]
+        } else {
+          // [START signout]
+          firebase.auth().signOut();
+          // [END signout]
+        }
+        // [START_EXCLUDE]
+        document.getElementById('quickstart-sign-in').disabled = true;
+        // [END_EXCLUDE]
+      }
+      // [END buttoncallback]
+      /**
+       * initApp handles setting up UI event listeners and registering Firebase auth listeners:
+       *  - firebase.auth().onAuthStateChanged: This listener is called when the user is signed in or
+       *    out, and that is where we update the UI.
+       */
+      function initApp() {
+        // Listening for auth state changes.
+        // [START authstatelistener]
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // User is signed in.
+            var displayName = user.displayName;
+            var email = user.email;
+            var emailVerified = user.emailVerified;
+            var photoURL = user.photoURL;
+            var isAnonymous = user.isAnonymous;
+            var uid = user.uid;
+            var providerData = user.providerData;
+            // [START_EXCLUDE]
+            document.getElementById('quickstart-sign-in-status').textContent = 'Signed in';
+            document.getElementById('quickstart-sign-in').textContent = 'Log out';
+            document.getElementById('quickstart-account-details').textContent = JSON.stringify(user, null, '  ');
+            // [END_EXCLUDE]
+          } else {
+            // User is signed out.
+            // [START_EXCLUDE]
+            document.getElementById('quickstart-sign-in-status').textContent = 'Signed out';
+            document.getElementById('quickstart-sign-in').textContent = 'Log in with Facebook';
+            document.getElementById('quickstart-account-details').textContent = 'null';
+            document.getElementById('quickstart-oauthtoken').textContent = 'null';
+            // [END_EXCLUDE]
+          }
+          // [START_EXCLUDE]
+          document.getElementById('quickstart-sign-in').disabled = false;
+          // [END_EXCLUDE]
         });
-      } else {
-        $location.path('/dashboard')
+        // [END authstatelistener]
+        document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false);
       }
-    });
-  } else {
-    // User is signed-out of Facebook.
-    firebase.auth().signOut();
-  }
-}
-
-function isUserEqual(facebookAuthResponse, firebaseUser) {
-  if (firebaseUser) {
-    var providerData = firebaseUser.providerData;
-    for (var i = 0; i < providerData.length; i++) {
-      if (providerData[i].providerId === firebase.auth.FacebookAuthProvider.PROVIDER_ID &&
-          providerData[i].uid === facebookAuthResponse.userID) {
-        // We don't need to re-auth the Firebase connection.
-        return true;
-      }
-    }
-  }
-  return false;
-}
+      window.onload = function() {
+        initApp();
+      };
 }]);
